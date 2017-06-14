@@ -1,0 +1,72 @@
+{% block logmap_res %}
+    {% if LogR != None %}
+        <div class="row">
+            <h4>Logistic map</h4>
+        </div>
+        {% for s_name in s_names %}
+            <div class="row pad-all">
+                <h4>{{s_name}}</h4>
+                <div class="col-md-12">
+                    <div id="box_{{forloop.counter}}"></div>
+                </div>
+            </div>
+        {% endfor %}
+    {%endif%}
+    {% for s in LogR %}
+        <script type="text/javascript">
+            var id = 'box_{{forloop.counter}}'
+
+            var categ = [];
+            {% for categ in s_categories %}
+                var cat = '{{categ}}';
+                categ.push(cat);
+            {%endfor%}
+
+            var data = []
+            {% for data in s %}
+                var cat_data = []
+                {% for value in data %}
+                    cat_data.push({{value}})
+                {%endfor%}
+                data.push(cat_data)
+            {%endfor%}
+
+
+            Highcharts.chart(id, {
+                chart: {
+                    type: 'boxplot'
+                },
+
+                title: {
+                    text: ''
+                },
+
+                legend: {
+                    enabled: false
+                },
+
+                xAxis: {
+                    categories: categ,
+                    title: {
+                        text: 'Channel'
+                    }
+                },
+
+                yAxis: {
+                    title: {
+                        text: 'Coef r'
+                    },
+                },
+
+                series: [{
+                    name: 'Observations',
+                    data: data,
+                    tooltip: {
+                        headerFormat: '<em>Experiment No {point.key}</em><br/>'
+                    }
+                }]
+
+            });
+        </script>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,161 @@
+{% block crosstable_res %}
+    {% if ResultCross_table != None %}
+    <div class="row">
+        <h4>Complexity (cross table)</h4>
+        <div class="col-md-12">
+            {% autoescape off %}{{ResultCross_table}}{% endautoescape %}
+        </div>
+
+    </div>
+    <div class="row pad-all">
+        <div class="col-md-12">
+            <div id="crosstable_gist"></div>
+        </div>
+    </div>
+    <div class="row pad-all">
+        <div class="col-md-12">
+            <div id="crosstable_scat"></div>
+        </div>
+    </div>
+    <!--crosstable gist-->
+    <script type="text/javascript">
+        var categ = [];
+        {% for name in s_names %}
+            var name = '{{name}}';
+            categ.push(name);
+        {%endfor%}
+
+        var series = []
+
+        {% for name, values in cross_graph_dict.iteritems %}
+            data = []
+            {% for value in values %}
+                data.push({{value}})
+            {%endfor%}
+            series.push({name:'{{name}}', data: data})
+        {%endfor%}
+    </script>
+    <script type="text/javascript">
+        Highcharts.chart('crosstable_gist', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: ''
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                categories: categ,
+                crosshair: true
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Complexity'
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b>{point.y:.3f}</b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0
+                }
+            },
+            series: series
+        });
+    </script>
+    <!--crosstable scat-->
+    <script type="text/javascript">
+        var categ = [];
+        categ.push('');
+        {% for c_name in cross_dictlist.0.categories %}
+            var name = '{{c_name}}';
+            categ.push(name);
+        {%endfor%}
+        console.log(categ)
+
+        series = []
+        {% for s_data in cross_dictlist %}
+            data = []
+            {% for key_value in s_data.values %}
+                data.push( [ {{key_value.0}}, {{key_value.1}} ] )
+            {%endfor%}
+            series.push({name:'{{s_data.s_name}}', data: data})
+        {%endfor%}
+        console.log(series)
+    </script>
+    <script type="text/javascript">
+        Highcharts.chart('crosstable_scat', {
+            chart: {
+                type: 'scatter',
+                zoomType: 'xy'
+            },
+            title: {
+                text: ''
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                title: {
+                    enabled: true,
+                    text: 'Channel'
+                },
+                startOnTick: true,
+                endOnTick: true,
+                showLastLabel: true,
+                categories:  categ
+            },
+            yAxis: {
+                title: {
+                    text: 'Complexity'
+                }
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'left',
+                verticalAlign: 'top',
+                x: 100,
+                y: 70,
+                floating: true,
+                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+                borderWidth: 1
+            },
+            plotOptions: {
+                scatter: {
+                    marker: {
+                        radius: 5,
+                        states: {
+                            hover: {
+                                enabled: true,
+                                lineColor: 'rgb(100,100,100)'
+                            }
+                        }
+                    },
+                    states: {
+                        hover: {
+                            marker: {
+                                enabled: false
+                            }
+                        }
+                    },
+                    tooltip: {
+                        headerFormat: '<b>{series.name}</b><br>',
+                        pointFormat: '{point.x} ch, {point.y}'
+                    }
+                }
+            },
+            series: series
+    });
+    </script>
+    {%endif%}
+{% endblock %}
